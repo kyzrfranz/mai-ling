@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /app/build/bundestag-api-amd64-linux /bundestag-api
+COPY --from=build /app/build/mailer-amd64-linux /mailer
 
 EXPOSE 8080
 ENTRYPOINT ["/mailer"]
