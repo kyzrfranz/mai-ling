@@ -1,0 +1,54 @@
+The NICE License
+Version 1.1 – April 7 2025
+
+NICE = Nonprofits and Independent Civil Entities
+
+Copyright (c) 2025 [Author or Organization Name]
+
+Permission is hereby granted, free of charge, to use, modify, and distribute this Software and associated documentation files (the “Software”) under the following conditions:
+
+1. ✅ Permitted Users
+This license grants rights to:
+- Non-governmental organizations (NGOs)
+- Registered nonprofit associations and foundations
+- Charitable, scientific, educational, or humanitarian institutions
+- Civic tech initiatives and grassroots movements
+...provided they are **non-commercial in nature**.
+
+2. ⛔ Excluded Users
+This license **explicitly prohibits** the use of this Software by:
+- Political parties or organizations affiliated with them
+- Intelligence or military agencies
+- Entities monitored or classified as extremist, unconstitutional, or suspected threats by national or international constitutional protection bodies (e.g., Verfassungsschutz)
+- Commercial entities of any kind (including for-profit subsidiaries of nonprofits)
+- Foundations or organizations with primarily political, ideological, or opaque financial objectives
+- Any use of the Software in commercial products, services, or for revenue-generating purposes
+
+3. 💬 Case-by-case Exceptions
+If you’re unsure whether your use is permitted, **please contact us**.
+We reserve the right to grant or deny usage at our discretion ("gut feeling clause").
+
+4. 📜 Derivative Works
+Any modified version, derivative work, or redistribution of the Software must:
+- Remain licensed under this exact license (NICE License), and
+- Also **exclude all forms of commercial use**
+
+5. 🔍 Transparency Clause
+We may request verification of nonprofit status and non-commercial use, such as tax exemption documentation or recent filings.
+Failure to provide documentation upon request may result in revocation of rights.
+
+6. ❌ Revocation
+If an entity violates these terms, the author may revoke their rights to use the Software at any time.
+
+7. ⚠️ Disclaimer
+This Software is provided "as is", without any warranties. The author(s) assume no liability for any use or misuse.
+
+---
+
+If you're an NGO, welcome.
+If you're a shady lobby, extremist group, political think tank, or want to sell this:
+**K.M.A. – Kindly Move your Asshole elsewhere.**
+
+For questions: [email/contact]
+
+SPDX-License-Identifier: NICE-1.1

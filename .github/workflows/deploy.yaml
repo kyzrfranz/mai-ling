@@ -1,0 +1,51 @@
+# Setup secrets in github:
+# - GCP_SA_KEY: JSON key of service account (roles: Cloud Run Admin, Storage Admin) 
+# - GCP_PROJECT_ID: Google cloud project name 
+
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    name: Build, Dockerize, and Deploy to Cloud Run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: '490.0.0'
+
+      - name: Authenticate Docker with GCR
+        run: |
+          gcloud auth configure-docker eu.gcr.io
+
+      - name: Build and push Docker image
+        run: |
+          docker buildx build --platform linux/amd64 --push -t eu.gcr.io/buntesdach/mailer:latest .
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy mailer \
+            --image=eu.gcr.io/buntesdach/mailer:latest \
+            --use-http2 \
+            --region=europe-west1 \
+            --platform=managed \
+            --allow-unauthenticated \
+            --min-instances=1 \
+            --max-instances=2 \
+            --concurrency=2 \
+            --memory=128Mi \
+            --cpu=1 
