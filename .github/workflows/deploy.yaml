@@ -37,6 +37,9 @@ jobs:
           docker buildx build --platform linux/amd64 --push -t eu.gcr.io/buntesdach/mailer:latest .
 
       - name: Deploy to Cloud Run
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          AUTH_KEY: ${{ secrets.AUTH_KEY }}
         run: |
           gcloud run deploy mailer \
             --image=eu.gcr.io/buntesdach/mailer:latest \
