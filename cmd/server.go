@@ -11,6 +11,7 @@ import (
 var (
 	logger          *slog.Logger
 	mongoUri        string
+	mongoDbName     string
 	mongoCollection string
 	authKey         string
 )
@@ -20,7 +21,9 @@ func main() {
 	logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	mongoUri = stringOrEnv("MONGO_URI", "")
+
 	mongoCollection = stringOrEnv("MONGO_COLLECTION", "test")
+	mongoDbName = stringOrEnv("MONGO_DB_NAME", "test")
 	authKey = stringOrEnv("AUTH_KEY", "")
 	cli, err := db.NewV1MongoClient(db.WithUri(mongoUri))
 	if err != nil {
@@ -33,7 +36,7 @@ func main() {
 	apiServer.Use(http.MiddlewareRecovery)
 	apiServer.Use(http.MiddlewareCORS)
 
-	collection := cli.Database("buntesdach").Collection(mongoCollection)
+	collection := cli.Database(mongoDbName).Collection(mongoCollection)
 	letterHandler := handlers.NewPrintJobHandler(collection, logger, authKey)
 	statsHandler := handlers.NewStatsHandler(collection, logger)
 	apiServer.AddHandler("/letters/{id}", letterHandler.Handle)
