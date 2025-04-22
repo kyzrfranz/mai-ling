@@ -1,4 +1,7 @@
 # mai-ling
+mailing backend to store print jobs & provide simple stats.
+
+Used by https://www.stoppt-scheinselbststaendigkeit.de
 
 ## Configuration
 
