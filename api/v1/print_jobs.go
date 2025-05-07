@@ -11,8 +11,8 @@ type PrintJobStatus string
 
 type PrintJob struct {
 	Id           string         `json:"id,omitempty" bson:"_id"`
-	RecipientIds []string       `json:"recipientIds,omitempty" bson:"recipientIds"`
-	MyMdbs       []string       `json:"myMdbs,omitempty" bson:"myMdbs"`
+	RecipientIds []string       `json:"recipientIds,omitempty" bson:"ids"`
+	MyMdbs       []string       `json:"myMdbs,omitempty" bson:"mymdbs"`
 	Status       PrintJobStatus `json:"status,omitempty" bson:"status"`
 	Address      struct {
 		Name    string `json:"name" bson:"name"`
