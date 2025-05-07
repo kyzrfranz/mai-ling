@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	lru "github.com/hashicorp/golang-lru"
 	v1 "github.com/kyzrfranz/mai-ling/api/v1"
 	"github.com/kyzrfranz/mai-ling/internal/cache"
@@ -14,7 +12,6 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 )
@@ -173,59 +170,4 @@ func (h *StatsHandler) handleByCreation(w http.ResponseWriter, req *http.Request
 		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
 		return
 	}
-}
-
-func (h *StatsHandler) fromCacheOrUrl(key string, fetchUrl string) (*hpResponse, error) {
-	var cached hpResponse
-	hit, err := h.cache.Get(key, &cached)
-	if err != nil {
-		h.logger.Error("Cache error", "error", err)
-		return nil, err
-	}
-
-	if hit {
-		h.logger.Info("Cache hit", "key", key)
-		return &cached, nil
-	}
-
-	slog.Info("Cache miss", "key", key)
-	u, _ := url.Parse(fmt.Sprint(fetchUrl, key))
-	body, _ := internalHttp.FetchUrl(u)
-
-	var resp hpResponse
-	if err := json.Unmarshal(body, &resp); err != nil {
-		h.logger.Error("Failed to unmarshal response", "error", err)
-		_ = h.cache.Set(key, nil) // prevent repeated fetches
-		return nil, nil
-	}
-
-	_ = h.cache.Set(key, &resp)
-	return &resp, nil
-}
-
-type cityResponse struct {
-	PostalCode   string `json:"postalCode"`
-	Name         string `json:"name"`
-	Municipality struct {
-		Key  string `json:"key"`
-		Name string `json:"name"`
-		Type string `json:"type"`
-	} `json:"municipality"`
-	FederalState struct {
-		Key  string `json:"key"`
-		Name string `json:"name"`
-	} `json:"federalState"`
-}
-
-type hpResponse struct {
-	PostCode            string `json:"post code"`
-	Country             string `json:"country"`
-	CountryAbbreviation string `json:"country abbreviation"`
-	Places              []struct {
-		PlaceName         string `json:"place name"`
-		Longitude         string `json:"longitude"`
-		State             string `json:"state"`
-		StateAbbreviation string `json:"state abbreviation"`
-		Latitude          string `json:"latitude"`
-	} `json:"places"`
 }
