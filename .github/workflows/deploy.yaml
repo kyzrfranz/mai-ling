@@ -40,7 +40,7 @@ jobs:
       - name: Deploy to Cloud Run
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
-          MONGO_DBNAME: ${{ vars.MONGO_DBNAME }}
+          MONGO_DB_NAME: ${{ vars.MONGO_DB_NAME }}
           MONGO_COLLECTION: ${{ vars.MONGO_COLLECTION }}
           AUTH_KEY: ${{ secrets.AUTH_KEY }}
         run: |
@@ -55,4 +55,4 @@ jobs:
             --concurrency=2 \
             --memory=256Mi \
             --cpu=1 \
-            --set-env-vars=MONGO_URI=${MONGO_URI},MONGO_DBNAME=${MONGO_DBNAME},MONGO_COLLECTION=${MONGO_COLLECTION},AUTH_KEY=${AUTH_KEY}
+            --set-env-vars=MONGO_URI=${MONGO_URI},MONGO_DB_NAME=${MONGO_DB_NAME},MONGO_COLLECTION=${MONGO_COLLECTION},AUTH_KEY=${AUTH_KEY}

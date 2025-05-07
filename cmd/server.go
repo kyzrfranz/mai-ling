@@ -32,6 +32,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	logger.Info("connected to mongo", "db", mongoDbName, "collection", mongoCollection)
+
 	apiServer := http.NewApiServer(8080, logger)
 
 	apiServer.Use(http.MiddlewareRecovery)
