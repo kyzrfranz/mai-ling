@@ -1,29 +1,20 @@
 package handlers
 
 import (
-	"encoding/json"
-	v1 "github.com/kyzrfranz/mai-ling/api/v1"
 	internalhttp "github.com/kyzrfranz/mai-ling/internal/http"
+	"github.com/kyzrfranz/mai-ling/internal/zipcode"
 	"log/slog"
 	"net/http"
-	"os"
 )
 
 type ZipCodeHandler struct {
 	logger *slog.Logger
-	data   []zipcodeInternal
+	zc     *zipcode.ZipCode
 }
 
 func NewZipCodeHandler(logger *slog.Logger) *ZipCodeHandler {
-	data, err := os.ReadFile("./data/zipcodes.de.json")
-	if err != nil {
-		panic(err)
-	}
-	var zipcodes []zipcodeInternal
-	err = json.Unmarshal(data, &zipcodes)
-
 	return &ZipCodeHandler{
-		data:   zipcodes,
+		zc:     zipcode.NewZipCode(),
 		logger: logger,
 	}
 }
@@ -45,35 +36,13 @@ func (h *ZipCodeHandler) Get(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Invalid zipcode", http.StatusBadRequest)
 		return
 	}
-	var foundZipCode *v1.ZipCode
-	for _, zip := range h.data {
-		if zip.Name == zipcode {
-			foundZipCode = &v1.ZipCode{
-				ZipCode:      zip.Name,
-				CityName:     zip.PlzName,
-				CityNameLong: zip.PlzNameLong,
-			}
-			break
-		}
-	}
-	if foundZipCode == nil {
-		http.Error(w, "Zipcode not found", http.StatusNotFound)
+
+	foundZipCode, err := h.zc.FindByZipCode(zipcode)
+	if err != nil {
+		h.logger.Error("Failed to find zipcode", "error", err)
+		http.Error(w, "zipcode not found", http.StatusNotFound)
 		return
 	}
-	internalhttp.MarshalJsonResponse(w, foundZipCode)
-}
 
-type zipcodeInternal struct {
-	Name        string `json:"name"`
-	PlzName     string `json:"plz_name"`
-	PlzNameLong string `json:"plz_name_long"`
-	//Geometry    struct {
-	//	Type     string `json:"type"`
-	//	Geometry struct {
-	//		Coordinates [][][]float64 `json:"coordinates"`
-	//		Type        string        `json:"type"`
-	//	} `json:"geometry"`
-	//	Properties struct {
-	//	} `json:"properties"`
-	//} `json:"geometry"`
+	internalhttp.MarshalJsonResponse(w, foundZipCode)
 }

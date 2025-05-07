@@ -17,11 +17,11 @@ type Stats struct {
 }
 
 type StatsByLocation struct {
-	City    string `bson:"city,omitempty" json:"city,omitempty"`
-	ZipCode string `bson:"zipCode,omitempty" json:"zipCode,omitempty"`
-	Lat     string `bson:"lat,omitempty" json:"lat,omitempty"`
-	Lng     string `bson:"lng,omitempty" json:"lng,omitempty"`
-	Count   int    `bson:"count" json:"count"`
+	City    string  `bson:"city,omitempty" json:"city,omitempty"`
+	ZipCode string  `bson:"zipCode,omitempty" json:"zipCode,omitempty"`
+	Lat     float64 `bson:"lat,omitempty" json:"lat,omitempty"`
+	Lng     float64 `bson:"lng,omitempty" json:"lng,omitempty"`
+	Count   int     `bson:"count" json:"count"`
 }
 
 type StatsByCreationDate struct {

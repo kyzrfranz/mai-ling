@@ -9,6 +9,7 @@ import (
 	"github.com/kyzrfranz/mai-ling/internal/cache"
 	"github.com/kyzrfranz/mai-ling/internal/db"
 	internalHttp "github.com/kyzrfranz/mai-ling/internal/http"
+	"github.com/kyzrfranz/mai-ling/internal/zipcode"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"log/slog"
@@ -24,13 +25,16 @@ type StatsHandler struct {
 	collection *mongo.Collection
 	logger     *slog.Logger
 	cache      *cache.Cache
+	zc         *zipcode.ZipCode
 }
 
 func NewStatsHandler(collection *mongo.Collection, logger *slog.Logger, bCache *cache.Cache) *StatsHandler {
+
 	return &StatsHandler{
 		collection: collection,
 		logger:     logger,
 		cache:      bCache,
+		zc:         zipcode.NewZipCode(),
 	}
 }
 
@@ -127,16 +131,14 @@ func (h *StatsHandler) handleGetByCity(w http.ResponseWriter, req *http.Request)
 		}
 
 		zip := results[i].ZipCode
-		response, err := h.fromCacheOrUrl(zip, "https://api.zippopotam.us/de/")
+		response, err := h.zc.FindByZipCode(zip)
 		if err != nil {
 			h.logger.Error("Failed to fetch city name", "error", err)
-			http.Error(w, "Failed to fetch city name", http.StatusInternalServerError)
-			return
 		}
-		if response != nil && len(response.Places) > 0 {
-			results[i].City = response.Places[0].PlaceName
-			results[i].Lat = response.Places[0].Latitude
-			results[i].Lng = response.Places[0].Longitude
+		if response != nil {
+			results[i].City = response.CityName
+			results[i].Lat = response.Coordinates.Lat
+			results[i].Lng = response.Coordinates.Lng
 		} else {
 			h.logger.Info("City name not found for zip code", "zip", zip)
 		}
