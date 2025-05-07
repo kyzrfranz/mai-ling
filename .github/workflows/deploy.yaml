@@ -55,4 +55,5 @@ jobs:
             --concurrency=2 \
             --memory=256Mi \
             --cpu=1 \
+            --timeout=30 \
             --set-env-vars=MONGO_URI=${MONGO_URI},MONGO_DB_NAME=${MONGO_DB_NAME},MONGO_COLLECTION=${MONGO_COLLECTION},AUTH_KEY=${AUTH_KEY}
