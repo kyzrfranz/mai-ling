@@ -1,5 +1,7 @@
 package v1
 
+import "time"
+
 type Stats struct {
 	UniqueRequests int `bson:"uniqueRequests" json:"uniqueRequests"`
 	TotalIds       int `bson:"totalIds" json:"totalLetters"`
@@ -12,4 +14,17 @@ type Stats struct {
 		Queued int `bson:"queued" json:"queued"`
 		Sent   int `bson:"sent" json:"sent"`
 	} `json:"statusCounts" bson:"statusCounts"`
+}
+
+type StatsByLocation struct {
+	City    string `bson:"city,omitempty" json:"city,omitempty"`
+	ZipCode string `bson:"zipCode,omitempty" json:"zipCode,omitempty"`
+	Lat     string `bson:"lat,omitempty" json:"lat,omitempty"`
+	Lng     string `bson:"lng,omitempty" json:"lng,omitempty"`
+	Count   int    `bson:"count" json:"count"`
+}
+
+type StatsByCreationDate struct {
+	Count int       `bson:"count" json:"count"`
+	Date  time.Time `bson:"date" json:"date"`
 }

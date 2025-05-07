@@ -1,6 +1,7 @@
 package main
 
 import (
+	internalCache "github.com/kyzrfranz/mai-ling/internal/cache"
 	"github.com/kyzrfranz/mai-ling/internal/db"
 	"github.com/kyzrfranz/mai-ling/internal/handlers"
 	"github.com/kyzrfranz/mai-ling/internal/http"
@@ -36,12 +37,21 @@ func main() {
 	apiServer.Use(http.MiddlewareRecovery)
 	apiServer.Use(http.MiddlewareCORS)
 
+	cache, err := internalCache.NewCache("./.cache")
+	if err != nil {
+		bail("init cache", err)
+	}
+
 	collection := cli.Database(mongoDbName).Collection(mongoCollection)
 	letterHandler := handlers.NewPrintJobHandler(collection, logger, authKey)
-	statsHandler := handlers.NewStatsHandler(collection, logger)
+	statsHandler := handlers.NewStatsHandler(collection, logger, cache)
+	zipcodeHandler := handlers.NewZipCodeHandler(logger)
 	apiServer.AddHandler("/letters/{id}", letterHandler.Handle)
 	apiServer.AddHandler("/letters", letterHandler.Handle)
-	apiServer.AddHandler("/stats", statsHandler.Stats)
+	apiServer.AddHandler("/zipcodes/{zipcode}", zipcodeHandler.Handle)
+	apiServer.AddHandler("/stats", statsHandler.Handle)
+	apiServer.AddHandler("/stats/{special}", statsHandler.Handle)
+	apiServer.AddStaticHandler("/static/", "static")
 
 	apiServer.ListenAndServe()
 }
