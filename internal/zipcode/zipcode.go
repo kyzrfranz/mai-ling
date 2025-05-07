@@ -4,23 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	v1 "github.com/kyzrfranz/mai-ling/api/v1"
-	"os"
 )
 
 type ZipCode struct {
 	data []zipcodeInternal
 }
 
-func NewZipCode() *ZipCode {
-	data, err := os.ReadFile("./data/zipcodes.de.json")
-	if err != nil {
-		panic(err)
-	}
+func NewZipCode(data []byte) (*ZipCode, error) {
 	var zipcodes []zipcodeInternal
-	err = json.Unmarshal(data, &zipcodes)
+	err := json.Unmarshal(data, &zipcodes)
+	if err != nil {
+		return nil, err
+	}
 	return &ZipCode{
 		data: zipcodes,
-	}
+	}, nil
 }
 
 func (h *ZipCode) FindByZipCode(zipcode string) (*v1.ZipCode, error) {

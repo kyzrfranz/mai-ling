@@ -25,13 +25,13 @@ type StatsHandler struct {
 	zc         *zipcode.ZipCode
 }
 
-func NewStatsHandler(collection *mongo.Collection, logger *slog.Logger, bCache *cache.Cache) *StatsHandler {
+func NewStatsHandler(collection *mongo.Collection, logger *slog.Logger, bCache *cache.Cache, zc *zipcode.ZipCode) *StatsHandler {
 
 	return &StatsHandler{
 		collection: collection,
 		logger:     logger,
 		cache:      bCache,
-		zc:         zipcode.NewZipCode(),
+		zc:         zc,
 	}
 }
 

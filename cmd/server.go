@@ -5,6 +5,7 @@ import (
 	"github.com/kyzrfranz/mai-ling/internal/db"
 	"github.com/kyzrfranz/mai-ling/internal/handlers"
 	"github.com/kyzrfranz/mai-ling/internal/http"
+	"github.com/kyzrfranz/mai-ling/internal/zipcode"
 	"log/slog"
 	"os"
 )
@@ -44,10 +45,19 @@ func main() {
 		bail("init cache", err)
 	}
 
+	data, err := os.ReadFile("./data/zipcodes.de.json")
+	if err != nil {
+		panic(err)
+	}
+	zc, err := zipcode.NewZipCode(data)
+	if err != nil {
+		bail("init zipcodes", err)
+	}
+
 	collection := cli.Database(mongoDbName).Collection(mongoCollection)
 	letterHandler := handlers.NewPrintJobHandler(collection, logger, authKey)
-	statsHandler := handlers.NewStatsHandler(collection, logger, cache)
-	zipcodeHandler := handlers.NewZipCodeHandler(logger)
+	statsHandler := handlers.NewStatsHandler(collection, logger, cache, zc)
+	zipcodeHandler := handlers.NewZipCodeHandler(logger, zc)
 	apiServer.AddHandler("/letters/{id}", letterHandler.Handle)
 	apiServer.AddHandler("/letters", letterHandler.Handle)
 	apiServer.AddHandler("/zipcodes/{zipcode}", zipcodeHandler.Handle)

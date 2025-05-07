@@ -12,9 +12,9 @@ type ZipCodeHandler struct {
 	zc     *zipcode.ZipCode
 }
 
-func NewZipCodeHandler(logger *slog.Logger) *ZipCodeHandler {
+func NewZipCodeHandler(logger *slog.Logger, zc *zipcode.ZipCode) *ZipCodeHandler {
 	return &ZipCodeHandler{
-		zc:     zipcode.NewZipCode(),
+		zc:     zc,
 		logger: logger,
 	}
 }
