@@ -2,6 +2,12 @@ package handlers
 
 import (
 	"context"
+	"log"
+	"log/slog"
+	"net/http"
+	"strconv"
+	"time"
+
 	lru "github.com/hashicorp/golang-lru"
 	v1 "github.com/kyzrfranz/mai-ling/api/v1"
 	"github.com/kyzrfranz/mai-ling/internal/cache"
@@ -9,11 +15,6 @@ import (
 	internalHttp "github.com/kyzrfranz/mai-ling/internal/http"
 	"github.com/kyzrfranz/mai-ling/internal/zipcode"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
-	"log/slog"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 var zipCache *lru.Cache
@@ -77,7 +78,9 @@ func (h *StatsHandler) handleStats(w http.ResponseWriter, req *http.Request) {
 
 	cursor, err := h.collection.Aggregate(ctx, pipeline)
 	if err != nil {
-		log.Fatal("Aggregation error: ", err)
+		h.logger.Error("Aggregation error", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return // Crucial: stop execution here
 	}
 	defer cursor.Close(ctx)
 

@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -12,7 +13,8 @@ func DefaultPipeline(topIds int) mongo.Pipeline {
 			// Facet for unique summary based on address & ids
 			{"uniqueSummary", bson.A{
 				bson.D{{"$addFields", bson.D{
-					{"idsCount", bson.D{{"$size", "$ids"}}},
+					// Fix: Use $ifNull to ensure $size receives an array
+					{"idsCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$ids", bson.A{}}}}}}},
 				}}},
 				bson.D{{"$group", bson.D{
 					{"_id", bson.D{
@@ -33,6 +35,7 @@ func DefaultPipeline(topIds int) mongo.Pipeline {
 				}}},
 			}},
 			{"topIds", bson.A{
+				// Unwind handles null/missing ids by simply dropping the doc from this facet
 				bson.D{{"$unwind", "$ids"}},
 				bson.D{{"$group", bson.D{
 					{"_id", "$ids"},
@@ -43,11 +46,10 @@ func DefaultPipeline(topIds int) mongo.Pipeline {
 			}},
 			// Facet for status counts with deduplication.
 			{"statusCounts", bson.A{
-				// First, add the idsCount field to each document.
 				bson.D{{"$addFields", bson.D{
-					{"idsCount", bson.D{{"$size", "$ids"}}},
+					// Fix: Use $ifNull to ensure $size receives an array
+					{"idsCount", bson.D{{"$size", bson.D{{"$ifNull", bson.A{"$ids", bson.A{}}}}}}},
 				}}},
-				// Deduplicate by composite key (address and ids), capturing the first status and idsCount.
 				bson.D{{"$group", bson.D{
 					{"_id", bson.D{
 						{"address", "$address"},
@@ -56,7 +58,6 @@ func DefaultPipeline(topIds int) mongo.Pipeline {
 					{"status", bson.D{{"$first", "$status"}}},
 					{"idsCount", bson.D{{"$first", "$idsCount"}}},
 				}}},
-				// Now group all unique jobs to count statuses and accumulate sentLetters.
 				bson.D{{"$group", bson.D{
 					{"_id", nil},
 					{"queued", bson.D{{"$sum", bson.D{{"$cond", bson.A{
